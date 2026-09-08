@@ -188,19 +188,6 @@ class OakDNode(Node):
         }
         slam.setParams(params)
 
-        # Left right camera parameters for robust offroad performance
-        # Auto-exposure limit to prevent motion blur on ground features
-        left.initialControl.setAutoExposureLimit(2500)
-        right.initialControl.setAutoExposureLimit(2500)
-
-        # Apply autoexposure to only bottom part of image where ground is
-        left.initialControl.setAutoExposureRegion(
-            startX=0,
-            startY=int(0.5 * self.mono_size[0]),
-            width=self.mono_size[1],
-            height=int(0.5 * self.mono_size[1]),
-        )
-
         # Stereo configuration
         stereo.setExtendedDisparity(False)
         stereo.setLeftRightCheck(True)
@@ -209,7 +196,7 @@ class OakDNode(Node):
         stereo.enableDistortionCorrection(True)
         stereo.initialConfig.setLeftRightCheckThreshold(10)
         stereo.setDepthAlign(RGB_SOCKET)
-        # stereo.setOutputSize(*self.rgb_size)
+        stereo.setOutputSize(*self.rgb_size)
 
         # IMU Configuration
         imu.enableIMUSensor(
@@ -246,9 +233,9 @@ class OakDNode(Node):
         imu.out.link(odom.imu)
 
         # Links for SLAM
-        odom.transform.link(slam.odom)
         rgbOut.link(slam.rect)
         stereo.depth.link(slam.depth)
+        odom.transform.link(slam.odom)
 
         # Output queues
         self.camera_queue = rgbHostOut.createOutputQueue(maxSize=8, blocking=False)
