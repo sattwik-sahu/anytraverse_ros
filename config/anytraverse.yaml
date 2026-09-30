@@ -1,6 +1,6 @@
 /anytraverse:
   ros__parameters:
-    hydra_config_file: src/config/pipelines/paper.yaml
+    hydra_config_file: config/pipelines/paper.yaml
     scene_sim_thresh: 0.8
     roi_unc_thresh: 0.5
     roi_x_bounds:
