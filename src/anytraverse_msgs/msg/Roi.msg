@@ -1,0 +1,2 @@
+float64 uncertainty
+float64 traversability

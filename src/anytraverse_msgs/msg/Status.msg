@@ -1,0 +1,2 @@
+string traversal_state
+bool hoc_req

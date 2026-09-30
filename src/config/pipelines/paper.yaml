@@ -1,0 +1,4 @@
+# This config builds the pipeline as published in the ISER 2025 paper
+
+_target_: anytraverse.build_pipeline_from_paper
+_partial_: true
