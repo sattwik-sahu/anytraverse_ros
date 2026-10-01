@@ -23,12 +23,12 @@ def generate_launch_description():
     trav_map_topic_arg = DeclareLaunchArgument(
         name="trav_map_topic",
         default_value="trav_map",
-        description="The name of the topic to publish traversability maps to",
+        description="The name of the topic to publish mono8 traversability maps to",
     )
     unc_map_topic_arg = DeclareLaunchArgument(
         name="unc_map_topic",
         default_value="unc_map",
-        description="The name of the topic to publish uncertainty maps to",
+        description="The name of the topic to publish mono8 uncertainty maps to",
     )
     state_topic_arg = DeclareLaunchArgument(
         name="state_topic",
@@ -40,7 +40,9 @@ def generate_launch_description():
         description="The initial prompt for the AnyTraverse pipeline. Syntax: ``<prompt1>: <weight1>; <prompt2: weight2>[;] ...``",
     )
 
-    # Create the AnyTraverse node
+    # Create the AnyTraverse node (decoupled perception: Image -> mono8 maps + state)
+    # NOTE: the node subscribes to relative `image_raw` so namespacing works;
+    # compressed transport is negotiated subscriber-side, no republishers needed.
     anytraverse_node = Node(
         package="anytraverse_ros",
         namespace=LaunchConfiguration("ns"),
@@ -55,47 +57,11 @@ def generate_launch_description():
             },
         ],
         remappings=[
+            ("image_raw", LaunchConfiguration("image_topic")),
             ("trav_map", LaunchConfiguration("trav_map_topic")),
             ("unc_map", LaunchConfiguration("unc_map_topic")),
             ("state", LaunchConfiguration("state_topic")),
-            ("/camera/rgb/image_raw", LaunchConfiguration("image_topic")),
         ],
-    )
-
-    # Create republishers for the traversability and uncertainty maps
-    trav_map_republisher = Node(
-        package="image_transport",
-        executable="republish",
-        name="trav_map_republisher",
-        namespace=LaunchConfiguration("ns"),
-        parameters=[
-            {
-                "in_transport": "raw",
-                "out_transport": "compressed",
-            }
-        ],
-        remappings=[
-            ("in", LaunchConfiguration("trav_map_topic")),
-            ("out/compressed", [LaunchConfiguration("trav_map_topic"), "/compressed"]),
-        ],
-        output="screen",
-    )
-    unc_map_republisher = Node(
-        package="image_transport",
-        executable="republish",
-        name="unc_map_republisher",
-        namespace=LaunchConfiguration("ns"),
-        parameters=[
-            {
-                "in_transport": "raw",
-                "out_transport": "compressed",
-            }
-        ],
-        remappings=[
-            ("in", LaunchConfiguration("unc_map_topic")),
-            ("out/compressed", [LaunchConfiguration("unc_map_topic"), "/compressed"]),
-        ],
-        output="screen",
     )
 
     return LaunchDescription(
@@ -108,7 +74,5 @@ def generate_launch_description():
             state_topic_arg,
             init_prompt_arg,
             anytraverse_node,
-            trav_map_republisher,
-            unc_map_republisher,
         ]
     )
