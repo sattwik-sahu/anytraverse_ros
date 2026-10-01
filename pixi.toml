@@ -83,7 +83,7 @@ ros-humble-desktop = "*"
 channels = ["https://prefix.dev/robostack-jazzy"]
 
 [feature.jazzy.dependencies]
-ros-jazzy-desktop = "*"
+ros-jazzy-ros-base = "*"
 ros-jazzy-compressed-image-transport = ">=4.0.7,<5"
 ros-jazzy-rmw-zenoh-cpp = ">=0.2.10,<0.3"
 ros-jazzy-cv-bridge = ">=4.1.0,<5"

@@ -1,3 +1,5 @@
 string      prompt
 ---
+bool        success
+string      message
 TravPref[]  prefs
