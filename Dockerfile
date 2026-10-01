@@ -23,3 +23,5 @@ COPY --from=build --chmod=0755 /ws/entrypoint.sh /ws/entrypoint.sh
 COPY ./src /ws/src
 
 ENTRYPOINT [ "/ws/entrypoint.sh" ]
+
+CMD [ "bash" ]
