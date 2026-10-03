@@ -9,6 +9,8 @@ setup(
     name=package_name,
     version="0.0.0",
     packages=find_packages(exclude=["test"]),
+    # NOTE: config/*.yaml is intentionally not installed; the params file
+    # path is passed explicitly via the `params_file` launch argument.
     data_files=[
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
         ("share/" + package_name, ["package.xml"]),
@@ -26,6 +28,9 @@ setup(
         ],
     },
     entry_points={
-        "console_scripts": ["anytraverse_node = anytraverse_ros.anytraverse_node:main"],
+        "console_scripts": [
+            "anytraverse_node = anytraverse_ros.anytraverse_node:main",
+            "vel_gating_node = anytraverse_ros.cmd_vel_gating_node:main",
+        ],
     },
 )

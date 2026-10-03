@@ -33,17 +33,17 @@ from anytraverse_msgs.srv import HumanCall
 from anytraverse_ros.constants import (
     HUMAN_CALL_SERVICE,
     IMAGE_ENCODING,
-    IMAGE_TOPIC,
     NODE_NAME,
-    STATE_TOPIC,
-    TRAV_MAP_TOPIC,
-    UNC_MAP_TOPIC,
     create_image_qos_profile,
     create_map_qos_profile,
     create_state_qos_profile,
 )
 from anytraverse_ros.image_utils import tensor_to_mono8
-from anytraverse_ros.params import declare_anytraverse_params, load_anytraverse_params
+from anytraverse_ros.params import (
+    AnyTraverseParams,
+    declare_anytraverse_params,
+    load_anytraverse_params,
+)
 
 _TRAV_STATE_TO_MSG = {
     TraversalState.OK: Status.OK,
@@ -78,18 +78,21 @@ class AnyTraverseNode(Node):
         """Initialize subscriptions, publishers, buffers, and the pipeline."""
         super().__init__(node_name=NODE_NAME)
 
-        # Build the AnyTraverse pipeline
+        # Build the AnyTraverse pipeline (declares + loads all parameters,
+        # including topic names)
         self.get_logger().info("Building AnyTraverse pipeline")
         self._anytraverse: Any = None
-        self._build_anytraverse_pipeline()
+        params: AnyTraverseParams = self._build_anytraverse_pipeline()
 
         # CV bridge
         self._bridge: CvBridge = CvBridge()
 
-        # Subscribe to the image topic (sensor-data QoS to match drivers)
+        # Subscribe to the image topic (sensor-data QoS to match drivers).
+        # Topic name is parameter-based so namespaces/Docker Compose
+        # setups work without remappings.
         self._image_sub: Subscription[Image] = self.create_subscription(
             msg_type=Image,
-            topic=IMAGE_TOPIC,
+            topic=params.image_topic,
             qos_profile=create_image_qos_profile(),
             callback=self._image_callback,
         )
@@ -98,17 +101,17 @@ class AnyTraverseNode(Node):
         # decoupled consumers and rosbag do not miss state transitions)
         self._trav_map_pub: Publisher[Image] = self.create_publisher(
             msg_type=Image,
-            topic=TRAV_MAP_TOPIC,
+            topic=params.trav_map_topic,
             qos_profile=create_map_qos_profile(),
         )
         self._unc_map_pub: Publisher[Image] = self.create_publisher(
             msg_type=Image,
-            topic=UNC_MAP_TOPIC,
+            topic=params.unc_map_topic,
             qos_profile=create_map_qos_profile(),
         )
         self._state_pub: Publisher[State] = self.create_publisher(
             msg_type=State,
-            topic=STATE_TOPIC,
+            topic=params.state_topic,
             qos_profile=create_state_qos_profile(),
         )
 
@@ -131,8 +134,11 @@ class AnyTraverseNode(Node):
             HumanCall, HUMAN_CALL_SERVICE, self._handle_human_call
         )
 
-    def _build_anytraverse_pipeline(self) -> None:
+    def _build_anytraverse_pipeline(self) -> AnyTraverseParams:
         """Declare parameters, load them, and instantiate the pipeline.
+
+        Returns:
+            The resolved parameters (including topic names).
 
         Raises:
             FileNotFoundError: If the Hydra configuration file does not exist.
@@ -154,6 +160,10 @@ class AnyTraverseNode(Node):
         )
         self.get_logger().info(f"ROI X bounds: {params.roi_x_bounds}")
         self.get_logger().info(f"ROI Y bounds: {params.roi_y_bounds}")
+        self.get_logger().info(f"topic.image: {params.image_topic}")
+        self.get_logger().info(f"topic.trav_map: {params.trav_map_topic}")
+        self.get_logger().info(f"topic.unc_map: {params.unc_map_topic}")
+        self.get_logger().info(f"topic.state: {params.state_topic}")
 
         # Build the pipeline using the parameters
         if not params.hydra_config_file.exists():
@@ -173,6 +183,8 @@ class AnyTraverseNode(Node):
                 roi_x_bounds=params.roi_x_bounds,
                 roi_y_bounds=params.roi_y_bounds,
             )
+
+        return params
 
     def _image_callback(self, msg: Image) -> None:
         """Buffer the latest image and ensure a worker thread is running.

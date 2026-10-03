@@ -1,5 +1,5 @@
 [workspace]
-name = "anytraverse_ws"
+name = "anytraverse_ros"
 description = "ROS2 wrapper for AnyTraverse"
 channels = ["https://prefix.dev/conda-forge"]
 platforms = [
@@ -12,9 +12,7 @@ platforms = [
 [target.unix.activation]
 # For activation scripts, we use bash for Unix-like systems
 scripts = ["install/setup.bash"]
-env = {
-  RMW_IMPLEMENTATION = "rmw_zenoh_cpp"
-}
+env = { RMW_IMPLEMENTATION = "rmw_zenoh_cpp" }
 
 [target.osx-arm64.activation.env]
 KMP_DUPLICATE_LIB_OK = "TRUE"
@@ -45,6 +43,7 @@ libgl-devel = "*"
 [environments]
 humble = { features = ["humble", "build"] }
 jazzy = { features = ["jazzy", "build"] }
+lyrical = { features = ["lyrical", "build"] }
 
 [pypi-dependencies]
 anytraverse = { version = ">=2.0.0, <3", extras = ["hf"] }
@@ -76,7 +75,10 @@ torchvision = { version = "*", index = "https://download.pytorch.org/whl/cu132" 
 channels = ["https://prefix.dev/robostack-humble"]
 
 [feature.humble.dependencies]
-ros-humble-desktop = "*"
+ros-humble-ros-base = "*"
+ros-humble-compressed-image-transport = ">=2.5.5,<3"
+ros-humble-cv-bridge = ">=3.2.1,<4"
+ros-humble-rmw-zenoh-cpp = ">=0.1.8,<0.2"
 
 ### ROS Jazzy ####
 [feature.jazzy]
@@ -87,3 +89,13 @@ ros-jazzy-ros-base = "*"
 ros-jazzy-compressed-image-transport = ">=4.0.7,<5"
 ros-jazzy-rmw-zenoh-cpp = ">=0.2.10,<0.3"
 ros-jazzy-cv-bridge = ">=4.1.0,<5"
+
+### ROS Lyrical ####
+[feature.lyrical]
+channels = ["https://prefix.dev/robostack-lyrical"]
+
+[feature.lyrical.dependencies]
+ros-lyrical-ros-base = "*"
+ros-lyrical-compressed-image-transport = ">=6.2.6,<7"
+ros-lyrical-cv-bridge = ">=4.1.0,<5"
+ros-lyrical-rmw-zenoh-cpp = ">=0.10.5,<0.11"

@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>anytraverse_ros</name>
-  <version>0.0.1</version>
+  <version>0.0.3</version>
   <description>ROS2 wrapper for AnyTraverse</description>
   <maintainer email="sattwik21@iiserb.ac.in">sattwik-sahu</maintainer>
   <license>Apache-2.0</license>
@@ -16,6 +16,7 @@
   <depend>cv_bridge</depend>
   <depend>rclpy</depend>
   <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
 
   <exec_depend>launch</exec_depend>

@@ -33,7 +33,3 @@ def tensor_to_mono8(t: torch.Tensor) -> npt.NDArray[np.uint8]:
         arr = arr.reshape(-1, arr.shape[-2], arr.shape[-1]).mean(axis=0)
     img = (arr * 255.0).clip(0, 255).astype(np.uint8)
     return img
-
-
-# Backwards-compatible alias (mono8-only output).
-tensor_to_uint8_rgb = tensor_to_mono8

@@ -5,8 +5,15 @@ from pathlib import Path
 from typing import Tuple
 
 from anytraverse.preferences import parse_trav_pref_syntax
-from rclpy.node import Node
 from rcl_interfaces.msg import FloatingPointRange, ParameterDescriptor
+from rclpy.node import Node
+
+from anytraverse_ros.constants import (
+    IMAGE_TOPIC,
+    STATE_TOPIC,
+    TRAV_MAP_TOPIC,
+    UNC_MAP_TOPIC,
+)
 
 DEFAULT_INIT_PROMPT: str = ""
 DEFAULT_ROI_UNC_THRESH: float = 0.0
@@ -14,6 +21,10 @@ DEFAULT_SCENE_SIM_THRESH: float = 0.0
 DEFAULT_ROI_X_BOUNDS: Tuple[float, float] = (0.33, 0.67)
 DEFAULT_ROI_Y_BOUNDS: Tuple[float, float] = (0.75, 0.95)
 DEFAULT_HYDRA_CONFIG_FILE: str = ""
+DEFAULT_IMAGE_TOPIC: str = IMAGE_TOPIC
+DEFAULT_TRAV_MAP_TOPIC: str = TRAV_MAP_TOPIC
+DEFAULT_UNC_MAP_TOPIC: str = UNC_MAP_TOPIC
+DEFAULT_STATE_TOPIC: str = STATE_TOPIC
 
 
 @dataclass(frozen=True)
@@ -27,6 +38,10 @@ class AnyTraverseParams:
         roi_x_bounds: Normalized (min, max) ROI bounds on the x-axis.
         roi_y_bounds: Normalized (min, max) ROI bounds on the y-axis.
         hydra_config_file: Path to the Hydra pipeline config file.
+        image_topic: Image topic consumed by AnyTraverse.
+        trav_map_topic: Topic to publish mono8 traversability maps to.
+        unc_map_topic: Topic to publish mono8 uncertainty maps to.
+        state_topic: Topic to publish AnyTraverse states to.
     """
 
     init_prompt: dict
@@ -35,6 +50,10 @@ class AnyTraverseParams:
     roi_x_bounds: Tuple[float, float]
     roi_y_bounds: Tuple[float, float]
     hydra_config_file: Path
+    image_topic: str
+    trav_map_topic: str
+    unc_map_topic: str
+    state_topic: str
 
 
 def _float_descriptor(description: str) -> ParameterDescriptor:
@@ -90,6 +109,28 @@ def declare_anytraverse_params(node: Node) -> None:
         DEFAULT_HYDRA_CONFIG_FILE,
         ParameterDescriptor(description="Path to the Hydra pipeline config file."),
     )
+    node.declare_parameter(
+        "topic.image",
+        DEFAULT_IMAGE_TOPIC,
+        ParameterDescriptor(description="Image topic consumed by AnyTraverse."),
+    )
+    node.declare_parameter(
+        "topic.trav_map",
+        DEFAULT_TRAV_MAP_TOPIC,
+        ParameterDescriptor(
+            description="Topic to publish mono8 traversability maps to."
+        ),
+    )
+    node.declare_parameter(
+        "topic.unc_map",
+        DEFAULT_UNC_MAP_TOPIC,
+        ParameterDescriptor(description="Topic to publish mono8 uncertainty maps to."),
+    )
+    node.declare_parameter(
+        "topic.state",
+        DEFAULT_STATE_TOPIC,
+        ParameterDescriptor(description="Topic to publish AnyTraverse states to."),
+    )
 
 
 def _validate_bounds(name: str, bounds: Tuple[float, float]) -> None:
@@ -124,23 +165,21 @@ def load_anytraverse_params(node: Node) -> AnyTraverseParams:
         ValueError: If ROI bounds are invalid.
     """
     init_prompt = parse_trav_pref_syntax(
-        syntax=node.get_parameter(name="init_prompt")
-        .get_parameter_value()
-        .string_value
+        syntax=node.get_parameter("init_prompt").get_parameter_value().string_value
     )
     ref_scene_sim_thresh = (
-        node.get_parameter(name="scene_sim_thresh").get_parameter_value().double_value
+        node.get_parameter("scene_sim_thresh").get_parameter_value().double_value
     )
     roi_unc_thresh = (
-        node.get_parameter(name="roi_unc_thresh").get_parameter_value().double_value
+        node.get_parameter("roi_unc_thresh").get_parameter_value().double_value
     )
     roi_x_bounds: Tuple[float, float] = tuple(
-        node.get_parameter(name="roi_x_bounds")
+        node.get_parameter("roi_x_bounds")
         .get_parameter_value()
         .double_array_value.tolist()
     )
     roi_y_bounds: Tuple[float, float] = tuple(
-        node.get_parameter(name="roi_y_bounds")
+        node.get_parameter("roi_y_bounds")
         .get_parameter_value()
         .double_array_value.tolist()
     )
@@ -149,6 +188,18 @@ def load_anytraverse_params(node: Node) -> AnyTraverseParams:
     hydra_config_file: Path = Path(
         node.get_parameter("hydra_config_file").get_parameter_value().string_value
     )
+    image_topic: str = (
+        node.get_parameter("topic.image").get_parameter_value().string_value
+    )
+    trav_map_topic: str = (
+        node.get_parameter("topic.trav_map").get_parameter_value().string_value
+    )
+    unc_map_topic: str = (
+        node.get_parameter("topic.unc_map").get_parameter_value().string_value
+    )
+    state_topic: str = (
+        node.get_parameter("topic.state").get_parameter_value().string_value
+    )
     return AnyTraverseParams(
         init_prompt=init_prompt,
         ref_scene_similarity_threshold=ref_scene_sim_thresh,
@@ -156,4 +207,8 @@ def load_anytraverse_params(node: Node) -> AnyTraverseParams:
         roi_x_bounds=roi_x_bounds,
         roi_y_bounds=roi_y_bounds,
         hydra_config_file=hydra_config_file,
+        image_topic=image_topic,
+        trav_map_topic=trav_map_topic,
+        unc_map_topic=unc_map_topic,
+        state_topic=state_topic,
     )
