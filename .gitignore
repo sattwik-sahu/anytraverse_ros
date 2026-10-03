@@ -1,9 +1,42 @@
-# pixi environments
-.pixi/*
-!.pixi/config.toml
+# Pixi environments (keep pixi.lock committed for reproducible envs)
+.pixi/
+
+# Local env files
 .env
 .env.*
+
+# ROS 2 / colcon build artifacts
+build/
+install/
+log/
+
+# ROS bag recordings (large, never commit)
+*.db3
+*.mcap
+*.bag
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Packaging and virtual environments
+*.egg-info/
+.eggs/
+dist/
+.venv/
+venv/
+ENV/
+
+# Test and type-check caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editors, IDEs, and OS files
 .vscode/
-/build/
-/install/
-/log/
+.idea/
+.DS_Store
+Thumbs.db
