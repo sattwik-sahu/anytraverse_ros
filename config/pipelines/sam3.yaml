@@ -1,1 +1,22 @@
-# TODO Write the config for building the SAM3 pipeline
+# SAM 3 attention maps + a selectable scene encoder for the history.
+#
+# Template: every pipeline config must be a Hydra *partial* targeting one of
+# the builders in `anytraverse.presets`. The node calls the built partial with
+# init_traversability_preferences, ref_scene_similarity_threshold,
+# roi_uncertainty_threshold, roi_x_bounds and roi_y_bounds, so do NOT set
+# those keys here. Only preset model-level options (encoder, image_size,
+# device, dtype).
+#
+# Options:
+#   encoder: "clip" | "siglip2" (default, best quality) | "dinov2"
+#   image_size: null (full resolution) or 560 (low-memory devices)
+#   device: null (auto-detect) or e.g. "cuda", "cpu"
+#   dtype: null (model default). Non-trivial to express in YAML; leave null.
+
+_target_: anytraverse.build_pipeline_sam3
+_partial_: true
+
+encoder: siglip2
+image_size: null
+device: null
+dtype: null

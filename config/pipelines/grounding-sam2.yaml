@@ -1,1 +1,23 @@
-# TODO Write the config for building the Grounding-SAM2 pipeline
+# Open-vocabulary detector (Grounding DINO or OWLv2) + SAM 2 refinement
+# for attention maps, plus a selectable scene encoder for the history.
+#
+# Template: every pipeline config must be a Hydra *partial* targeting one of
+# the builders in `anytraverse.presets`. The node calls the built partial with
+# init_traversability_preferences, ref_scene_similarity_threshold,
+# roi_uncertainty_threshold, roi_x_bounds and roi_y_bounds, so do NOT set
+# those keys here. Only preset model-level options (encoder, detector,
+# device, dtype).
+#
+# Options:
+#   encoder: "clip" | "siglip2" (default, best quality) | "dinov2"
+#   detector: "grounding-dino" (default) | "owlv2"
+#   device: null (auto-detect) or e.g. "cuda", "cpu"
+#   dtype: null (model default). Non-trivial to express in YAML; leave null.
+
+_target_: anytraverse.build_pipeline_grounded_sam2
+_partial_: true
+
+encoder: siglip2
+detector: grounding-dino
+device: null
+dtype: null
