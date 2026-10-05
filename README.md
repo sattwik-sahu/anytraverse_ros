@@ -49,15 +49,15 @@ configuration should be structured — copy and adapt them.
    ros2 launch anytraverse_ros anytraverse.launch.py \
      params_file:=$(pwd)/config/anytraverse.yaml \
      init_prompt:="road: 1.0" \
-     ns:=robot1
+     ns:=anytraverse # Namespace for topics
    ```
 
 4. **Check it is alive:**
 
    ```bash
-   ros2 topic echo /trav_map --once        # mono8 traversability map
-   ros2 topic echo /state --once           # roi + status.hoc_req
-   ros2 topic echo /cmd_vel_gated --once   # gated velocity
+   ros2 topic echo /anytraverse/trav_map --once        # mono8 traversability map
+   ros2 topic echo /anytraverse/state --once           # roi + status.hoc_req
+   ros2 topic echo /anytraverse/cmd_vel_gated --once   # gated velocity
    ```
 
 5. **Talk to a running pipeline** (no restart needed):

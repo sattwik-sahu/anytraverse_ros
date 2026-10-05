@@ -1,0 +1,22 @@
+# NOTE: this file must stay at the build-context root (repo root). Docker
+# reads .dockerignore from the context root, NOT from docker/ — moving it
+# next to the Dockerfile would silently disable it.
+# Local build leftovers (rebuilt inside the image; huge context otherwise)
+build/
+install/
+log/
+.pixi/
+
+# VCS and caches
+.git/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Local-only files
+.env
+.env.*
+*.db3
+*.mcap
+*.bag

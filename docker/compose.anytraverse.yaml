@@ -1,0 +1,56 @@
+# AnyTraverse service fragment.
+#
+# Consumed via `include:` from the main compose file, which must supply the
+# `build:` block for the `anytraverse` service, e.g.:
+#
+#   include:
+#     - path/to/anytraverse/docker/compose.anytraverse.yaml
+#   services:
+#     anytraverse:
+#       build:
+#         context: path/to/anytraverse
+#         dockerfile: docker/Dockerfile
+#         args:
+#           ROS_DISTRO: jazzy
+#
+# Required environment (export before `docker compose up`):
+#   CONFIG_DIR    Absolute host path to the anytraverse `config/` directory,
+#                 bind-mounted read-only at /ws/config (tune YAML without
+#                 rebuilding the image). Defaults to the repo's own config/
+#                 (../config relative to this file).
+#
+# Optional environment:
+#   OFFLINE       1 (default) = transformers runs fully offline, cache-only.
+#                 0 = allow downloads. Run once with OFFLINE=0 to fetch VLM
+#                 weights into the hf-cache volume, then omit it afterwards.
+#   INIT_PROMPT   Initial traversability prompt, e.g. "road: 1.0; bush: -0.8".
+#                 Syntax: "<prompt>: <weight>; ..." with weights in [-1, 1].
+#                 It is a required environment variable.
+
+services:
+  anytraverse:
+    container_name: anytraverse
+    command: >
+      ros2 launch anytraverse_ros anytraverse.launch.py
+      params_file:=/ws/config/anytraverse.yaml
+      "init_prompt:=${INIT_PROMPT}"
+    network_mode: host
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      HF_HOME: /ws/.hf-cache
+      TRANSFORMERS_OFFLINE: ${OFFLINE:-1}
+      RMW_IMPLEMENTATION: rmw_zenoh_cpp
+    volumes:
+      - ${CONFIG_DIR:-../config}:/ws/config:ro
+      - hf-cache:/ws/.hf-cache
+    restart: unless-stopped
+
+volumes:
+  hf-cache:
