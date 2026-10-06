@@ -66,8 +66,8 @@ torchvision = { version = "==0.23.0", index = "https://pypi.jetson-ai-lab.io/jp6
 
 # JetPack 7
 [target.jetpack-7.pypi-dependencies]
-torch = { version = "==2.8.0", index = "https://pypi.jetson-ai-lab.io/jp6/129" }
-torchvision = { version = "==0.23.0", index = "https://pypi.jetson-ai-lab.io/jp6/129" }
+torch = { version = "==2.12.1", index = "https://download.pytorch.org/whl/cu132" }
+torchvision = { index = "https://download.pytorch.org/whl/cu132" }
 
 ### ROS Humble ####
 [feature.humble]
