@@ -80,6 +80,8 @@ ENV HF_HOME=/ws/.hf-cache
 COPY --from=build /ws/.pixi/envs/${ROS_DISTRO} /ws/.pixi/envs/${ROS_DISTRO}
 COPY --from=build --chmod=0755 /ws/entrypoint.sh /ws/entrypoint.sh
 COPY --from=build /ws/install /ws/install
+COPY --from=build /ws/build /ws/build
+COPY --from=build /ws/log /ws/log
 
 # Runtime sources for --symlink-install links. Kept after the install copy
 # so source edits don't invalidate the environment layers above.
