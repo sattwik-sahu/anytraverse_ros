@@ -23,7 +23,7 @@ build = "colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMM
 
 # Dependencies used by all environments
 [dependencies]
-python = ">=3.12.14"
+python = ">=3.12, <3.13"
 # Build tools
 compilers = "*"
 cmake = "*"
@@ -43,7 +43,6 @@ libgl-devel = "*"
 [environments]
 humble = { features = ["humble", "build"] }
 jazzy = { features = ["jazzy", "build"] }
-lyrical = { features = ["lyrical", "build"] }
 
 [pypi-dependencies]
 anytraverse = { version = ">=2.0.0, <3", extras = ["hf"] }
@@ -60,15 +59,15 @@ torchvision = "*"
 torch = "*"
 torchvision = "*"
 
-# TODO Fill this up
 # JetPack 6
-# [target.jetpack-6.pypi-dependencies]
-# torch = { url = "" }
+[target.jetpack-6.pypi-dependencies]
+torch = { version = "==2.8.0", index = "https://pypi.jetson-ai-lab.io/jp6/129" }
+torchvision = { version = "==0.23.0", index = "https://pypi.jetson-ai-lab.io/jp6/129" }
 
 # JetPack 7
 [target.jetpack-7.pypi-dependencies]
-torch = { version = "*", index = "https://download.pytorch.org/whl/cu130" }
-torchvision = { version = "*", index = "https://download.pytorch.org/whl/cu130" }
+torch = { version = "==2.8.0", index = "https://pypi.jetson-ai-lab.io/jp6/129" }
+torchvision = { version = "==0.23.0", index = "https://pypi.jetson-ai-lab.io/jp6/129" }
 
 ### ROS Humble ####
 [feature.humble]
@@ -89,13 +88,3 @@ ros-jazzy-ros-base = "*"
 ros-jazzy-compressed-image-transport = ">=4.0.7,<5"
 ros-jazzy-rmw-zenoh-cpp = ">=0.2.10,<0.3"
 ros-jazzy-cv-bridge = ">=4.1.0,<5"
-
-### ROS Lyrical ####
-[feature.lyrical]
-channels = ["https://prefix.dev/robostack-lyrical"]
-
-[feature.lyrical.dependencies]
-ros-lyrical-ros-base = "*"
-ros-lyrical-compressed-image-transport = ">=6.2.6,<7"
-ros-lyrical-cv-bridge = ">=4.1.0,<5"
-ros-lyrical-rmw-zenoh-cpp = ">=0.10.5,<0.11"
