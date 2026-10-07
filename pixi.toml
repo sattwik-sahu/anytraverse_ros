@@ -5,8 +5,8 @@ channels = ["https://prefix.dev/conda-forge"]
 platforms = [
   "linux-64",
   "osx-arm64",
-  { name = "jetpack-6", platform = "linux-aarch64", cuda = "12.9" },
   { name = "jetpack-7", platform = "linux-aarch64", cuda = "13.2" },
+  { name = "jetpack-6", platform = "linux-aarch64", cuda = "12.9" },
 ]
 
 [target.unix.activation]
