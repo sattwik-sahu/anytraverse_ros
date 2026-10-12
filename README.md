@@ -15,9 +15,10 @@ Two nodes, one launch file:
   velocity through.
 
 All topic names and thresholds are ROS parameters loaded from a single YAML
-file; see [docs/parameters.md](docs/parameters.md) for the tuning table and
+file; see [docs/parameters.md](docs/parameters.md) for the tuning table,
 [docs/vlm-pipelines.md](docs/vlm-pipelines.md) for how to pick the VLM
-pipeline. The files under `config/` are templates showing how the
+pipeline, and [docs/docker.md](docs/docker.md) for Docker / Compose usage
+(direct `docker run` vs `include:` integration, env vars, namespaces). The files under `config/` are templates showing how the
 configuration should be structured — copy and adapt them.
 
 ## Quickstart
