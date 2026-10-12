@@ -34,6 +34,7 @@ services:
       ros2 launch anytraverse_ros anytraverse.launch.py
       params_file:=/ws/config/anytraverse.yaml
       "init_prompt:=${INIT_PROMPT}"
+      "ns:=${ANYT_NS}"
     network_mode: host
     ipc: host
     deploy:
